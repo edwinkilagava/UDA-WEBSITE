@@ -51,17 +51,14 @@ const navigationLinks = [
 
 function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
 
   const { user, loading, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-
   const accountMenuRef = useRef(null);
 
   const closeMenus = () => {
     setMobileMenuOpen(false);
-    setMobileAboutOpen(false);
     setAccountMenuOpen(false);
   };
 
@@ -86,25 +83,9 @@ function Navbar() {
     }
 
     document.addEventListener("mousedown", handleOutsideClick);
-    document.addEventListener("touchstart", handleOutsideClick);
 
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
-      document.removeEventListener("touchstart", handleOutsideClick);
-    };
-  }, []);
-
-  useEffect(() => {
-    function handleEscape(event) {
-      if (event.key === "Escape") {
-        closeMenus();
-      }
-    }
-
-    document.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
@@ -112,10 +93,12 @@ function Navbar() {
     user?.fullName || user?.name || user?.email || "My Account";
 
   const linkClass = ({ isActive }) =>
-    `relative block text-sm font-medium transition-colors ${
+    `relative text-sm font-medium transition-colors ${
       isActive
         ? "text-green-700"
         : "text-gray-700 hover:text-green-700"
+    } after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:bg-green-700 after:transition-all after:duration-300 ${
+      isActive ? "after:w-full" : "after:w-0 hover:after:w-full"
     }`;
 
   const accountActions = (
@@ -125,34 +108,30 @@ function Navbar() {
           <div className="relative" ref={accountMenuRef}>
             <button
               type="button"
-              onClick={() => {
-                setAccountMenuOpen((open) => !open);
-                setMobileAboutOpen(false);
-              }}
-              className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-green-700 lg:w-auto"
+              onClick={() =>
+                setAccountMenuOpen((open) => !open)
+              }
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-green-700"
               aria-expanded={accountMenuOpen}
               aria-haspopup="true"
             >
-              <span className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.8}
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M20 21a8 8 0 0 0-16 0"
-                  />
-                  <circle cx="12" cy="8" r="4" />
-                </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.8}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M20 21a8 8 0 0 0-16 0"
+                />
+                <circle cx="12" cy="8" r="4" />
+              </svg>
 
-                <span>My Account</span>
-              </span>
+              <span>My Account</span>
 
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -163,7 +142,6 @@ function Navbar() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 strokeWidth={2}
-                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -174,7 +152,7 @@ function Navbar() {
             </button>
 
             {accountMenuOpen && (
-              <div className="absolute right-0 top-full z-[70] mt-2 w-64 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-gray-200 bg-white py-2 shadow-xl">
+              <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white py-2 shadow-xl">
                 <div className="border-b border-gray-100 px-4 py-3">
                   <p className="truncate text-sm font-semibold text-gray-900">
                     {accountName}
@@ -191,12 +169,11 @@ function Navbar() {
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 shrink-0"
+                    className="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                     strokeWidth={1.8}
-                    aria-hidden="true"
                   >
                     <circle cx="12" cy="8" r="4" />
                     <path
@@ -216,12 +193,11 @@ function Navbar() {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 shrink-0"
+                      className="h-5 w-5"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                       strokeWidth={1.8}
-                      aria-hidden="true"
                     >
                       <rect
                         x="3"
@@ -265,12 +241,11 @@ function Navbar() {
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 shrink-0"
+                    className="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                     strokeWidth={1.8}
-                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -291,9 +266,7 @@ function Navbar() {
         ) : (
           <NavLink
             to="/login"
-            className={({ isActive }) =>
-              `${linkClass({ isActive })} rounded-lg px-3 py-3 lg:py-2`
-            }
+            className={linkClass}
             onClick={closeMenus}
           >
             Sign In
@@ -305,25 +278,25 @@ function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
       <nav
-        className="relative mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4 lg:gap-5 lg:px-8"
+        className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-4 sm:px-6 lg:px-8"
         aria-label="Main navigation"
       >
         {/* UDA logo */}
         <NavLink
           to="/"
-          className="flex min-w-0 shrink-0 items-center"
+          className="flex shrink-0 items-center"
           onClick={closeMenus}
           aria-label="UDA Home"
         >
           <img
             src={logo}
             alt="UDA"
-            className="h-10 w-auto max-w-[150px] object-contain sm:h-12"
+            className="h-12 w-auto object-contain"
           />
         </NavLink>
 
         {/* Desktop navigation */}
-        <ul className="hidden items-center gap-4 lg:flex xl:gap-6">
+        <ul className="hidden items-center gap-5 xl:gap-6 lg:flex">
           {navigationLinks.map((link) => (
             <li key={link.path} className="group relative">
               <NavLink
@@ -335,8 +308,8 @@ function Navbar() {
               </NavLink>
 
               {link.dropdown && (
-                <div className="invisible absolute left-0 top-full z-[60] w-56 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                  <div className="overflow-hidden rounded-xl border border-gray-100 bg-white py-2 shadow-xl">
+                <div className="invisible absolute left-0 top-full z-50 w-56 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                  <div className="overflow-hidden rounded-md bg-white py-2 shadow-lg ring-1 ring-black/5">
                     {link.dropdown.map((item) => (
                       <NavLink
                         key={item.path}
@@ -345,7 +318,7 @@ function Navbar() {
                         className={({ isActive }) =>
                           `block px-5 py-3 text-sm transition-colors ${
                             isActive
-                              ? "bg-green-50 font-medium text-green-700"
+                              ? "bg-green-50 text-green-700"
                               : "text-gray-700 hover:bg-gray-50 hover:text-green-700"
                           }`
                         }
@@ -366,35 +339,32 @@ function Navbar() {
 
           <NavLink
             to="/grassroots"
-            className="whitespace-nowrap rounded-md bg-green-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-800"
+            className="rounded-md bg-green-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-800"
             onClick={closeMenus}
           >
             Grassroots
           </NavLink>
         </div>
 
-        {/* Mobile hamburger button */}
+        {/* Mobile menu button */}
         <button
           type="button"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-gray-800 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-offset-2 lg:hidden"
-          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          aria-controls="mobile-navigation"
+          className="rounded-md p-2 text-gray-700 transition-colors hover:bg-gray-100 lg:hidden"
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileMenuOpen}
           onClick={() => {
             setMobileMenuOpen((open) => !open);
-            setMobileAboutOpen(false);
             setAccountMenuOpen(false);
           }}
         >
           {mobileMenuOpen ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-7 w-7"
+              className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={2}
-              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -405,12 +375,11 @@ function Navbar() {
           ) : (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-7 w-7"
+              className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={2}
-              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -422,103 +391,44 @@ function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile navigation panel */}
-      <div
-        id="mobile-navigation"
-        className={`absolute left-0 right-0 top-full z-50 border-t border-gray-200 bg-white shadow-xl lg:hidden ${
-          mobileMenuOpen ? "block" : "hidden"
-        }`}
-      >
-        <div className="max-h-[calc(100dvh-80px)] overflow-y-auto overscroll-contain px-5 py-5 sm:px-6">
+      {/* Mobile navigation */}
+      {mobileMenuOpen && (
+        <div className="border-t border-gray-200 bg-white px-5 py-5 shadow-lg lg:hidden">
           <ul className="flex flex-col gap-4">
             {navigationLinks.map((link) => (
               <li key={link.path}>
-                {link.dropdown ? (
-                  <>
-                    <div className="flex items-center justify-between gap-3">
+                <NavLink
+                  to={link.path}
+                  className={linkClass}
+                  onClick={closeMenus}
+                >
+                  {link.label}
+                </NavLink>
+
+                {link.dropdown && (
+                  <div className="ml-4 mt-3 flex flex-col gap-3 border-l-2 border-green-100 pl-4">
+                    {link.dropdown.map((item) => (
                       <NavLink
-                        to={link.path}
+                        key={item.path}
+                        to={item.path}
                         onClick={closeMenus}
                         className={({ isActive }) =>
-                          `block flex-1 py-2 text-sm font-medium ${
+                          `text-sm transition-colors ${
                             isActive
-                              ? "text-green-700"
-                              : "text-gray-800 hover:text-green-700"
+                              ? "font-semibold text-green-700"
+                              : "text-gray-600 hover:text-green-700"
                           }`
                         }
                       >
-                        {link.label}
+                        {item.label}
                       </NavLink>
-
-                      <button
-                        type="button"
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-700"
-                        onClick={() =>
-                          setMobileAboutOpen((open) => !open)
-                        }
-                        aria-label="Toggle About Us submenu"
-                        aria-expanded={mobileAboutOpen}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className={`h-5 w-5 transition-transform ${
-                            mobileAboutOpen ? "rotate-180" : ""
-                          }`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="m6 9 6 6 6-6"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-
-                    {mobileAboutOpen && (
-                      <div className="ml-3 mt-2 flex flex-col gap-1 border-l-2 border-green-100 pl-4">
-                        {link.dropdown.map((item) => (
-                          <NavLink
-                            key={item.path}
-                            to={item.path}
-                            onClick={closeMenus}
-                            className={({ isActive }) =>
-                              `block rounded-md px-3 py-3 text-sm transition-colors ${
-                                isActive
-                                  ? "bg-green-50 font-semibold text-green-700"
-                                  : "text-gray-600 hover:bg-gray-50 hover:text-green-700"
-                              }`
-                            }
-                          >
-                            {item.label}
-                          </NavLink>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <NavLink
-                    to={link.path}
-                    onClick={closeMenus}
-                    className={({ isActive }) =>
-                      `block py-2 text-sm font-medium transition-colors ${
-                        isActive
-                          ? "text-green-700"
-                          : "text-gray-800 hover:text-green-700"
-                      }`
-                    }
-                  >
-                    {link.label}
-                  </NavLink>
+                    ))}
+                  </div>
                 )}
               </li>
             ))}
 
-            <li className="border-t border-gray-100 pt-3">
+            <li className="border-t border-gray-100 pt-4">
               {accountActions}
             </li>
 
@@ -526,14 +436,14 @@ function Navbar() {
               <NavLink
                 to="/grassroots"
                 onClick={closeMenus}
-                className="block rounded-lg bg-green-700 px-5 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-green-800"
+                className="inline-block rounded-md bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-800"
               >
                 Grassroots
               </NavLink>
             </li>
           </ul>
         </div>
-      </div>
+      )}
     </header>
   );
 }
